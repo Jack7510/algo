@@ -70,10 +70,12 @@ def check_8_queen(matrix, row, col, i):
 '''
 8-queen problem
 '''
-def do_8_queen(matrix, row, col):
+def do_8_queen_v1(matrix, row, col):
 
     # row is simple, just move from col = 0 to 7
     if row == 0 :
+
+        # move to Next column
         i = matrix[row][8] + 1 # get index
 
         # set 1 to the new position
@@ -121,6 +123,75 @@ def do_8_queen(matrix, row, col):
             matrix[row][matrix[row][8]] = 0     # clear the previous 1
             matrix[row][8] = -1
         
+    return False
+
+
+'''
+move_to_next(matrix, row, col)
+
+return -1 : means it hit the end of row
+return >= 0 : the index of col
+'''
+def move_to_next(matrix, row, col) :
+    # move to Next column
+    i = matrix[row][8] + 1 # get index
+
+    # set 1 to the new position
+    if i <= 7 :
+        matrix[row][8] = i
+        matrix[row][i] = 1
+
+        # skip the first time
+        if i > 0 :
+            matrix[row][i-1] = 0
+        #print_matrix(matrix)
+        return i
+    else :
+        matrix[row][8] = -1
+        matrix[row][7] = 0
+        return -1
+
+
+'''
+get the index of "1" in the row
+'''
+def get_index(matrix, row, col):
+    return matrix[row][8]
+
+
+'''
+8-queen problem
+'''
+def do_8_queen(matrix, row, col):
+    # row is simple, just move from col = 0 to 7
+    if row == 0 :
+        # move to Next column
+        i = move_to_next(matrix, row, col) # get index
+
+        # if i == -1, return False
+        return i >= 0 
+
+
+    if row > 0 :
+        while True :
+            ''' 
+            the row is new, shape row from 0 ~ (row - 1)
+            if the lower matrix would not reshape, it is end
+            '''
+            i = get_index(matrix, row, col)
+            if i == -1 : # this row is new, handle the lower rows of the matrix
+                if do_8_queen(matrix, row - 1, col) != True :
+                    return False
+            
+            # find the right position of the queen which meets the rule of 8-queen
+            while True :
+                i = move_to_next(matrix, row, col)
+                if i >= 0 :
+                    if check_8_queen(matrix, row, col, i) == True :    
+                        return True
+                else :  # none col is found, stop, and handle the lower rows of the matrix
+                    break
+                
     return False
 
 
