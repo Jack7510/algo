@@ -26,7 +26,6 @@ def max_sum_interval_v1(a: list):
             t += a[j]
             if t > s :      # if sum is max, store
                 p, q, s = i, j, t
-                s = t
 
         # append the result to the list
         sum_list.append([p, q, s])
