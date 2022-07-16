@@ -39,6 +39,58 @@ def max_sum_interval_v1(a: list):
     return sum_list[k]
 
 
+
+'''
+solve the problem with recursive algo
+para: 
+a - the array of real number
+
+return:
+p - the left boundary
+q - the right bondary
+s - the sum of the interval
+'''
+def max_sum_interval_recursive(a: list, p, q):
+    n = q - p
+
+    # only one
+    if n == 0 :
+        return p, q, a[p]
+
+    else :
+        # handle the left part[p, p + n / 2]
+        p1, q1, s1 = max_sum_interval_recursive(a, p, p + n//2)
+        #print(p, p + n//2, p1, q1, s1)
+        
+        # handle the right part[p + n / 2 + 1]
+        p2, q2, s2 = max_sum_interval_recursive(a, p + n//2 + 1, q)
+        #print(p + n//2 + n%2, q, p2, q2, s2)
+
+        # 2 parts are connected and s1 > 0, s2 > 0
+        if (p2 == q1 + 1) :
+            if(s1 > 0) and (s2 > 0):
+                return p1, q2, s1 + s2
+
+        else:   # not connected 
+            '''
+            2 parts are seperated, the max(s1, s2, s3)
+            s1 = [p1, q1]
+            s2 = [p2, q2]
+            s3 = [p1, q2]
+            '''
+            s3 = 0.0
+            for i in range(q1+1, p2):
+                s3 += a[i]
+            s3 = s3 + s1 + s2
+            if (s3 > s1) and (s3 > s2) :
+                return p1, q2, s3
+
+        if s1 > s2 :
+            return p1, q1, s1
+        else:
+            return p2, q2, s2
+
+
 '''
     test function
 '''
@@ -48,3 +100,5 @@ if __name__ == "__main__":
     print('Example 1.3 max sum interval')
     print(a)
     print(max_sum_interval_v1(a))
+
+    print(max_sum_interval_recursive(a, 0, len(a) - 1))
