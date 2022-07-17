@@ -21,10 +21,15 @@ def max_sum_interval_v1(a: list):
     for i in range(0, n):
         # init sum
         t = a[i]
+
+        # handle only one item in a[]
+        if t > sum_max[2] :      # if sum is max, store
+            sum_max = [i, i, t]
+
         for j in range(i+1, n):
             # calc sum from i to j
             t += a[j]
-            if t > sum_max[2] :      # if sum is max, store
+            if t > sum_max[2] :      # if sum is max, keep max[]
                 sum_max = [i, j, t]
 
     return sum_max
@@ -166,3 +171,11 @@ if __name__ == "__main__":
     print("T(n) = n * log(n), Recurvise :", max_sum_interval_recursive(b, 0, len(b) - 1))
 
     print("T(n) = n, linear algo :", max_sum_interval_linear(b))
+
+    c = [-1.5, -12.3, -3.2, -5.5, -23.2, -3.2, -1.4, -62.2, -44.2, -5.4, -7.8, -1.1, -4.9]
+    print("Ex3: ", c)
+    print("T(n) = n ** 2: ", max_sum_interval_v1(c))
+
+    print("T(n) = n * log(n), Recurvise :", max_sum_interval_recursive(c, 0, len(c) - 1))
+
+    print("T(n) = n, linear algo :", max_sum_interval_linear(c))
