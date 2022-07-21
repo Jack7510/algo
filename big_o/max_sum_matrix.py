@@ -123,6 +123,18 @@ def _calc_matrix_sum( a, x1, y1, x2, y2 ):
     return tmp
 
 
+def _find_max_sub_matrix( a, x1, y1, x2, y2 ):
+    b = []
+    for i in range(y1, y2 + 1):
+        tmp = 0
+        for j in range(x1, x2 + 1):
+            tmp += a[j][i]
+        b.append(tmp)
+
+    s = max_sum_interval.max_sum_interval_linear(b)
+    return x1, y1 + s[0], x2, y1 + s[1], s[2]
+
+
 def max_sum_matrix_v3( a: list, begin: int, lines: int, width: int ) :
 
     # if only 1 line, end of recursive
@@ -142,17 +154,18 @@ def max_sum_matrix_v3( a: list, begin: int, lines: int, width: int ) :
             y1 = min(s1[1], s2[1])
             x2 = max(s1[2], s2[2])
             y2 = max(s1[3], s2[3])
-            s3 = _calc_matrix_sum( a, x1, y1, x2, y2 )
-            return [x1, y1, x2, y2, max(s1[-1], s2[-1], s3)]
+            s3 = _find_max_sub_matrix( a, x1, y1, x2, y2 )
+            if (s3[-1] > s1[-1]) and (s3[-1] > s2[-1]) :
+                return s3
 
         # else return max( s1, s2 )
-        else:
-            if s1[-1] > s2[-1] :
-                return s1
-            else: return s2
+        if s1[-1] > s2[-1] :
+            return s1
+        else: return s2
         
 
 import math
+import numpy as np
 
 '''
     test function
@@ -161,19 +174,21 @@ if __name__ == "__main__":
     a = [
         [1, 2, 3, 4, 0, -5, 6, -7],
         [6, -5, 4, 3, 2, 2, 8, -1],
-        [33, -15, 14, 32, 12, 42, 18, -81]
+        [33, -15, 14, 32, 12, 42, 18, -81],
+        [3, -20, 7, 88, 5, 20, 18, 4]
     ]
         
     print('Example 1.3 Q3 在一个二维矩阵中，寻找一个矩形的区域，使其中的数字之和达到最大值')
-    print("Ex1: ", a)
+    
+    print(np.array(a), np.sum(a))
 
     #x, y, width, high, sum = max_sum_matrix_v1(a, 8, 2)
     _g_count = 0
-    print("V1: ",  max_sum_matrix_v1(a, 3, 8), _g_count)
+    print("V1: ",  max_sum_matrix_v1(a, 4, 8), _g_count)
     
     _g_count = 0
-    print("V2: ",  max_sum_matrix_v2(a, 3, 8), _g_count)
+    print("V2: ",  max_sum_matrix_v2(a, 4, 8), _g_count)
     
     _g_count = 0
     # T(n) = n ** 2 + n * lg(n)
-    print("V3: ",  max_sum_matrix_v3(a, 0, 3, 8), _g_count + 3 * 8 * math.log2(3 * 8))
+    print("V3: ",  max_sum_matrix_v3(a, 0, 4, 8), math.pow(4 * 8, 2) + 4 * 8 * math.log2(4 * 8))
