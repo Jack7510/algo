@@ -112,10 +112,13 @@ import max_sum_interval
 
 # calc the sum of a small region T(n) = O(n**2)
 def _calc_matrix_sum( a, x1, y1, x2, y2 ):
+    global _g_count
+
     tmp = 0
     for i in range(x1, x2+1):
         for j in range(y1, y2+1):
             tmp += a[i][j]
+            _g_count += 1
     
     return tmp
 
@@ -149,6 +152,8 @@ def max_sum_matrix_v3( a: list, begin: int, lines: int, width: int ) :
             else: return s2
         
 
+import math
+
 '''
     test function
 '''
@@ -170,4 +175,5 @@ if __name__ == "__main__":
     print("V2: ",  max_sum_matrix_v2(a, 3, 8), _g_count)
     
     _g_count = 0
-    print("V3: ",  max_sum_matrix_v3(a, 0, 3, 8), _g_count)
+    # T(n) = n ** 2 + n * lg(n)
+    print("V3: ",  max_sum_matrix_v3(a, 0, 3, 8), _g_count + 3 * 8 * math.log2(3 * 8))
