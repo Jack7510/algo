@@ -2,20 +2,126 @@
 《计算之魂》 思考题 2.2 
 Q1. 修改中序遍历算法 2.2，将它变为先序遍历或者后序遍历算法
 
+习题 2.3 Q2 回旋打印二叉树的节点
+
 author: Jack Lee
 date:   July 23, 2022
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-
+//
+// 二叉树结构定义
+//
 struct binary_tree
 {
     void* data;         // any data
     struct binary_tree* left_subtree;   // point to left sub tree
     struct binary_tree* right_subtree;  // point to right sub tree
 };
+
+
+//
+// 队列结构定义
+//
+#define MAX_QUEUE 100
+struct queue
+{
+    void* data[MAX_QUEUE];
+    int   start_pointer;
+    int   end_pointer;
+};
+
+
+void queue_init(struct queue* q)
+{
+    memset( q->data, 0, sizeof(void *) * MAX_QUEUE);
+    q->start_pointer = 0;
+    q->end_pointer   = 0;
+}
+
+
+//
+// return 1: means queue is null, else return 0
+//
+int queue_is_null(struct queue* q)
+{
+    if( q->start_pointer == q->end_pointer )
+        return 1;   // true
+    else
+        return 0;
+}
+
+
+//
+// 没有考虑循环指针的情况
+//
+int queue_push_back(struct queue* q, void* p_data)
+{
+    if (q->end_pointer + 1 < MAX_QUEUE)
+    {
+        q->data[q->end_pointer] = p_data;
+        q->end_pointer += 1;
+        return 1;
+    }
+    
+    return 0;
+}
+
+
+void* queue_pop_front(struct queue* q)
+{
+    if( queue_is_null(q) ) return NULL;
+
+    return q->data[q->start_pointer++];
+}
+
+
+//
+// stack definition and functions
+//
+#define MAX_STACK 100
+struct stack
+{
+    void* data[MAX_STACK];
+    int   top_pointer;
+};
+
+
+void stack_init(struct stack* s)
+{
+    memset( s->data, 0, sizeof(void *) * MAX_STACK);
+    s->top_pointer = -1;
+}
+
+//
+// return 1 if null, else return 0
+//
+int stack_is_null(struct stack* s)
+{
+    return s->top_pointer == -1 ;
+}
+
+
+int stack_push(struct stack* s, void* p)
+{
+    if( s->top_pointer + 1 >= MAX_STACK) return 0;
+
+    s->top_pointer ++;
+    s->data[s->top_pointer] = p;
+
+    return 1;
+}
+
+
+void* stack_pop(struct stack* s)
+{
+    if( s->top_pointer == -1 ) return NULL;
+
+    return s->data[s->top_pointer--];
+}
 
 
 //
@@ -78,6 +184,7 @@ void depth_first_travers_tree_post(struct binary_tree* tree,
 
 //
 // build binary tree with the array a[]
+// 比节点小的，放在左边，大的放在右边
 //
 void insert_node(struct binary_tree** p_tree, struct binary_tree* node)
 {
@@ -138,6 +245,96 @@ void free_binary_tree(struct binary_tree* tree)
 
 
 //
+// 广度优先遍历二叉树
+//
+void breadth_first_traverse_tree(struct binary_tree* tree, 
+    void(* func)(struct binary_tree *))
+{
+    struct queue q;
+
+    if (NULL == tree) return;
+
+    queue_init( &q );
+    queue_push_back( &q, tree);
+
+    while (!queue_is_null(&q))
+    {
+        struct binary_tree* node;
+
+        node = (struct binary_tree*) queue_pop_front(&q);
+        func(node);
+
+        if( node->left_subtree != NULL ) {    // left tree is not null
+            queue_push_back(&q, (void*)node->left_subtree);
+        }
+
+        if( node->right_subtree != NULL ) {
+            queue_push_back(&q, (void*)node->right_subtree);
+        }
+    }
+}
+
+
+//
+// 思考题 2.3 Q2 回旋打印二叉树的节点
+// 修改二叉树的广度遍历算法，使得偶数行的节点从左向右遍历，奇数行的节点从右向左遍历
+// 思路：偶数行用队列queue(FIFO)，奇数行用堆栈stack(LIFO)
+//
+void breadth_first_traverse_tree_q2(struct binary_tree* tree, 
+    void(* func)(struct binary_tree *))
+{
+    struct queue q;
+    int    line = 0;
+    struct stack s0, s1;
+
+    if (NULL == tree) return;
+
+    //queue_init( &q );
+    //queue_push_back( &q, tree);
+    stack_init( &s0 );
+    stack_push( &s0, tree);
+    stack_init( &s1 );
+
+    while (!stack_is_null(&s0))
+    {
+        while (!stack_is_null(&s0))
+        {
+            struct binary_tree* node;
+
+            node = (struct binary_tree*) stack_pop(&s0);
+            func(node);
+
+            // 奇数行的节点，从左向右压入堆栈, 弹出时，就是从右到做
+            if( node->left_subtree != NULL ) {    // left tree is not null
+                stack_push(&s1, (void*)node->left_subtree);
+            }
+
+            if( node->right_subtree != NULL ) {
+                stack_push(&s1, (void*)node->right_subtree);
+            }
+        }
+
+        while ( !stack_is_null(&s1) )
+        {
+            struct binary_tree* node;
+
+            node = (struct binary_tree*) stack_pop(&s1);
+            func(node);
+
+            // 偶数行的节点，从右向左压入堆栈，弹出时，就是从左到右
+            if( node->right_subtree != NULL ) {    // left tree is not null
+                stack_push(&s0, (void*)node->right_subtree);
+            }
+
+            if( node->left_subtree != NULL ) {
+                stack_push(&s0, (void*)node->left_subtree);
+            }
+        }   
+    }
+}
+
+
+//
 // test function
 //
 int main(void)
@@ -157,6 +354,14 @@ int main(void)
 
     printf("post-> ");
     depth_first_travers_tree_post(tree, print_node);
+    printf("\n");
+
+    printf("breath->");
+    breadth_first_traverse_tree(tree, print_node);
+    printf("\n");
+
+    printf("2.3 Q2->");
+    breadth_first_traverse_tree_q2(tree, print_node);
     printf("\n");
 
     free_binary_tree(tree);
