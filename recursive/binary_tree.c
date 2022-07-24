@@ -3,9 +3,15 @@
 Q1. 修改中序遍历算法 2.2，将它变为先序遍历或者后序遍历算法
 
 习题 2.3 Q2 回旋打印二叉树的节点
+习题 2.4 Q1
+习题 2.4 Q2
 
 author: Jack Lee
-date:   July 23, 2022
+date:   July 22, 2022 
+
+History: 
+date:   July 22, 2022   习题2.3 Q1, Q2
+date:   July 23, 2022   习题2.4 Q1, Q2
 */
 
 #include <stdio.h>
@@ -169,16 +175,23 @@ void depth_first_travers_tree_prev(struct binary_tree* tree,
 
 //
 // 深度优先，后序遍历：先遍历左，右子树，再处理根节点信息，
+// history:
+//  为了完成思考题 2.4Q1，增加计算tree的深度部分
 //
-void depth_first_travers_tree_post(struct binary_tree* tree, 
+int depth_first_travers_tree_post(struct binary_tree* tree, 
     void(* func)(struct binary_tree *))
 {
-    if (NULL == tree) return;       // reach the end of leaf
+    int depth_left = 0;
+    int depth_right = 0;
+
+    if (NULL == tree) return 0;       // reach the end of leaf
     
-    depth_first_travers_tree_post(tree->left_subtree, func);
-    depth_first_travers_tree_post(tree->right_subtree, func);
+    depth_left = depth_first_travers_tree_post(tree->left_subtree, func);
+    depth_right = depth_first_travers_tree_post(tree->right_subtree, func);
     
     func(tree);
+
+    return ((depth_left > depth_right) ? depth_left : depth_right) + 1;
 }
 
 
@@ -341,6 +354,7 @@ int main(void)
 {
     int a[] = {5, 2, 8, 0, 10, 7, 18, 20, 30, 12, 15, 1};
     struct binary_tree* tree = NULL;
+    int depth_tree = 0;
 
     tree = build_binary_tree(a, sizeof(a)/sizeof(a[0]));
     
@@ -353,8 +367,9 @@ int main(void)
     printf("\n");
 
     printf("post-> ");
-    depth_first_travers_tree_post(tree, print_node);
+    depth_tree = depth_first_travers_tree_post(tree, print_node);
     printf("\n");
+    printf("2.4 Q1-> %d\n", depth_tree);
 
     printf("breath->");
     breadth_first_traverse_tree(tree, print_node);
@@ -364,6 +379,7 @@ int main(void)
     breadth_first_traverse_tree_q2(tree, print_node);
     printf("\n");
 
+    
     free_binary_tree(tree);
 
     return 0;
