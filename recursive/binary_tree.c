@@ -348,12 +348,56 @@ void breadth_first_traverse_tree_q2(struct binary_tree* tree,
 
 
 //
+// 思考题 2.4 Q2 如何在一个二叉排序树中找到第二大的元素
+// 1. 实现找到最大元素
+// 2. 实现找到指定元素的前一个 predecessor
+//
+int tree_max(struct binary_tree* root, 
+    struct binary_tree** x,             // return the max node
+    struct binary_tree** x_parent)
+{
+    if ( root == NULL ) return 0;
+
+    if ( root->right_subtree == NULL )
+    {
+        *x = root;
+        return 1;    
+    }
+
+    *x_parent = root;
+    return tree_max(root->right_subtree, x, x_parent);
+}
+
+
+struct binary_tree* tree_predecessor(struct binary_tree* root, // the root of the tree
+    struct binary_tree* x,             // the node whose precessor would be found 
+    struct binary_tree* x_parent)       // the parent of x
+{
+    struct binary_tree * predecessor = NULL;
+    struct binary_tree * tmp_parent;
+    
+    if ( root == NULL || x == NULL ) return NULL;
+
+    // if left subtree is not null, return the max of left tree
+    if( x->left_subtree != NULL )
+    {
+        tree_max(x->left_subtree, &predecessor, &tmp_parent );
+        return predecessor;
+    }
+
+    return x_parent;
+}
+
+
+//
 // test function
 //
 int main(void)
 {
-    int a[] = {5, 2, 8, 0, 10, 7, 18, 20, 30, 12, 15, 1};
+    int a[] = {5, 2, 8, 0, 10, 7, 18, 20, 30, 12, 15, 1, 22, 11};
     struct binary_tree* tree = NULL;
+    struct binary_tree *node, *parent, *predecessor;
+    
     int depth_tree = 0;
 
     tree = build_binary_tree(a, sizeof(a)/sizeof(a[0]));
@@ -379,7 +423,15 @@ int main(void)
     breadth_first_traverse_tree_q2(tree, print_node);
     printf("\n");
 
-    
+    printf("2.4 Q2->");
+    node = NULL;
+    parent = NULL;
+    predecessor = NULL;
+    tree_max(tree, &node, &parent);
+    predecessor = tree_predecessor(tree, node, parent);
+    printf("max = %d, parent = %d, predecessor = %d\n", 
+        (int)node->data, (int)parent->data, (int)predecessor->data);
+
     free_binary_tree(tree);
 
     return 0;
