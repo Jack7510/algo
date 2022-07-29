@@ -21,12 +21,12 @@ date:   July 23, 2022   习题2.4 Q1, Q2
 //
 // 二叉树结构定义
 //
-struct binary_tree
+typedef struct binary_tree
 {
     void* data;         // any data
     struct binary_tree* left_subtree;   // point to left sub tree
     struct binary_tree* right_subtree;  // point to right sub tree
-};
+}BINARY_TREE;
 
 
 //
