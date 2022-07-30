@@ -173,6 +173,9 @@ float int8_2_float32(FLOAT8 f8)
 }
 
 
+//
+// test function
+//
 int main()
 {
     float f = -9.625;
