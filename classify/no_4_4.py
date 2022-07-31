@@ -16,7 +16,10 @@ July 31, 2022, version 1.0
 '''
 
 def s(l, n):
-    return 1
+    if l == 0 or n == 0:
+        return 1
+    
+    return s(l, n-1) + s(l-1, n)
 
 
 '''
@@ -24,7 +27,7 @@ def s(l, n):
 '''
 if __name__ == "__main__":
     
-    print("1, %d", s(1,1))
-    print("2, %d", s(2,2))
-    print("2, %d", s(3,3))
-    print("2, %d", s(3,3))
+    print("N = 1", s(1,1))
+    print("N = 2", s(2,2))
+    print("N = 3", s(3,3))
+    print("N = 4", s(4,4))
