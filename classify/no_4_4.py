@@ -15,11 +15,15 @@ July 31, 2022, version 1.0
 
 '''
 
-def s(l, n):
-    if l == 0 or n == 0:
+'''
+计算向左走left个街区，向北走north个街区的走法
+当left或者north为0时，我们只有一种方法，走直线
+'''
+def s(left, north):
+    if left == 0 or north == 0:
         return 1
     
-    return s(l, n-1) + s(l-1, n)
+    return s(left, north-1) + s(left-1, north)
 
 
 '''
