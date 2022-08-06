@@ -12,12 +12,14 @@ desc: define graph data structure
 */
 
 #include <vector>
+#include <string>
+
 using namespace std;
 
 typedef enum color 
 { 
     WHITE, 
-    BLACK 
+    BLACK
 } COLOR;
 
 
@@ -56,9 +58,11 @@ public:
     // methods operation
 private:
     void DFT(int point_index);
+    void DFT(int point_index, int level);
 
 public:
     Graph(int n, int e_matrix[]);
+    Graph(const string in[]);
     ~Graph();
 
     void touch(int index);
@@ -67,4 +71,6 @@ public:
     bool is_touch(int index);
     void depth_first_traverse(void);
     void breadth_first_traverse(void);
+    void depth_first_traverse_level(void);
+    void breadth_first_traverse_level(void);
 };

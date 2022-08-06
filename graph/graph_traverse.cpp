@@ -6,6 +6,9 @@
 author: Jack Lee
 date:   Aug 6, 2022 
 
+version 1: 深度优先，广度优先算法
+version 2: 思考题 5.2 Q1
+
 */
 
 #include <iostream>
@@ -41,6 +44,37 @@ Graph::Graph(int n, int e_matrix[])
 
         // add point "i"
         m_Points.push_back(p);
+    }
+}
+
+//
+// constructor from string input
+//
+Graph::Graph(const string in[])
+{
+    m_nPoint = stoi(in[0]);
+    int edges = stoi(in[1]);
+    
+    for(int i = 0; i < m_nPoint; i++ )
+    {
+        POINT p;
+
+        p.point_color = WHITE;
+        m_Points.push_back(p);
+    }
+
+    for(int i = 2; i < (edges * 2 + 2); i++)
+    {
+        EDGE e;
+        int u, v;
+        string::size_type pos;
+
+        u = stoi(in[i]);
+        pos = in[i].find(' ');
+        v = stoi(in[i].substr(pos + 1));
+
+        e.n_point_index = v - 1;
+        m_Points[u-1].edges.push_back(e);
     }
 }
 
@@ -120,6 +154,37 @@ void Graph::DFT(int point_index)
     cout << "\n";
 }
 
+
+void Graph::DFT(int point_index, int level)
+{
+    // if point has been touched, do nothing
+    if( is_touch(point_index) ) return;
+
+    touch(point_index);
+    // point_index + 1, make it easy to review the graph
+    cout << point_index + 1 << "\t" << "level: " << level << "\n";
+
+    // traverse all edges with reverse 
+    for( EDGE e : m_Points[point_index].edges )
+    {
+        if( !is_touch(e.n_point_index) )
+            DFT(e.n_point_index, level + 1);
+    }
+
+    //cout << "\n";
+}
+
+
+//
+// 深度优先遍历, 带level
+//
+void Graph::depth_first_traverse_level(void)
+{
+    // 从第一个点开始
+    DFT(0, 1);
+}
+
+
 //
 // 广度优先遍历
 //
@@ -152,12 +217,61 @@ void Graph::breadth_first_traverse(void)
 }
 
 
+//
+// 广度优先遍历, 把点在哪一层都打印出来
+//
+struct st_point_info
+{
+    int  n_index;   // 点的号码
+    int  n_level;   // 点的层次
+};
+
+void Graph::breadth_first_traverse_level(void)
+{
+    list<struct st_point_info> q;
+    struct st_point_info s, t;
+    int level = 0;
+
+    s.n_index = 0;
+    s.n_level = 1;
+    q.push_back(s);     // handle the first element
+
+    while (!q.empty())
+    {
+        t = q.front();
+        q.pop_front();
+
+        if( is_touch(t.n_index) )
+            continue;   // if the point is touched, do nothing
+        
+        touch(t.n_index);
+        if( t.n_level > level )
+        {
+            level = t.n_level;
+            cout << "\nlevel :" << level << "\n";
+        }
+        cout << t.n_index + 1 << " ";
+        
+        // push all the points connecting with index to the queue
+        for( EDGE e : m_Points[t.n_index].edges )
+        {
+            s.n_index = e.n_point_index;
+            s.n_level = t.n_level + 1;
+            if( !is_touch(e.n_point_index) )
+                q.push_back(s);
+        }
+    }
+    
+    cout << "\n";
+}
+
 
 //
 // test
 //
 int main()
 {
+    /*
     int n = 13;         // 13 个点
     int edge_matrix[] = {
     //  1  2  3  4  5  6  7  8  9 10 11 12 13
@@ -175,12 +289,70 @@ int main()
         0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1 ,     // 12
         0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0       // 13
     };
+    */
 
-    Graph g(n, edge_matrix);
-    g.depth_first_traverse();
-    
+    const string str_grpah[] = { // 2E + 2
+        "13",   // number of vertex
+        "21",   // number of edge
+        "1 2",  // edge(1,2)
+        "1 3",
+        "2 4",
+        "2 5",
+        "2 6",
+        "2 7",
+        "2 1",
+        "3 7",
+        "3 8",
+        "5 9",
+        "5 10",
+        "5 6",
+        "6 5",
+        "6 10",
+        "6 11",
+        "6 8",
+        "6 7",
+        "6 2",
+        "7 6",
+        "7 8",
+        "7 3",
+        "7 2",
+        "8 3",
+        "8 7",
+        "8 6",
+        "8 11",
+        "8 12",
+        "9 13",
+        "9 11",
+        "9 10",
+        "9 5",
+        "10 12",
+        "10 6",
+        "10 5",
+        "10 9",
+        "11 8",
+        "11 6",
+        "11 9",
+        "12 8",
+        "12 10",
+        "12 13",
+        "13 12",
+        "13 9"
+    };
+
+    //Graph g(n, edge_matrix);
+    Graph g(str_grpah);
+
+    //g.depth_first_traverse();
+    //g.untouch_all();
+
+    g.depth_first_traverse_level();
     g.untouch_all();
-    g.breadth_first_traverse();
 
+    //g.breadth_first_traverse();
+    //g.untouch_all();
+
+    g.breadth_first_traverse_level();
+    g.untouch_all();
+    
     return 0;
 }
