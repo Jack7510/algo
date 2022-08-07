@@ -23,6 +23,8 @@ Aug 7, 2022, version 1.0
 
 '''
 
+import random
+
 def min_distance( p : list ) :
     s = []
     n = len(p)
@@ -46,3 +48,9 @@ if __name__ == "__main__":
 
     sk = min_distance(p)
     print( "k = ", sk[1], "S = ", sk[0] )
+
+    q = [ random.randrange(0, 100) for i in range(0,19)]
+    print(q)
+    sk = min_distance(q)
+    print( "k = ", sk[1], "S = ", sk[0] )
+
