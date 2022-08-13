@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/lijunqiang/Learning/algo/algo'
+make: Leaving directory `/Users/lijunqiang/Learning/algo/algo'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+
