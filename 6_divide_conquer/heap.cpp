@@ -7,17 +7,18 @@ author: Jack Lee
 date:   Aug 13, 2022 
 
 version 1: 最大堆，最小堆，
-
+version 2: top_k()
+    例题 6.3：一个未排序的序列里有N个元素，如何找到其中最大的K个元素？
 */
 
 #include <iostream>
-
+#include <vector>
 
 using namespace std;
 
 class Heap {
 public:
-    int*        a;      // heap array
+    vector<int>   a;      // heap array
     int  length; // heap array length
     int  heap_size;  // heap size
 
@@ -25,37 +26,38 @@ private:
     int  parent(int i);
     int  left(int i);
     int  right(int i);
-    void        swap(int i, int j);
+    void swap(int i, int j);
+    void max_heapify(int i);
+    void min_heapify(int i);
     
 public:
-    void max_heapify(int i);
     void build_max_heap(void);
     void heap_sort(void);
 
-    void min_heapify(int i);
     void build_min_heap(void);
     void heap_sort_reverse(void);
+    void min_heapify_with_new_element(int n);
 
-    int  get(int i);
-    void set(int i, int v);
+    void getHeap(vector<int>& b);
+    //void set(int i, int v);
     void print(void);
 
     Heap(int size);
-    Heap(int b[], int size);
+    Heap(const vector<int>& b, int size);
 
     ~Heap();
 };
 
-
+/*
 Heap::Heap(int size)
 {
     a = new int[size];
     length = size;
     heap_size = 0;
 }
+*/
 
-
-Heap::Heap(int b[], int size)
+Heap::Heap(const vector<int>& b, int size)
 {
     a = b;
     length = size;
@@ -88,6 +90,7 @@ int Heap::left(int i)
     return 2 * i + 1;
 }
 
+/*
 void Heap::set(int i, int v)
 {
     if( i < length )
@@ -100,6 +103,13 @@ int Heap::get(int i)
 
     return a[i];
 }
+*/
+
+void Heap::getHeap(vector<int>& b)
+{
+    b = a;
+}
+
 
 //
 // exchange a[i] a[j]
@@ -131,7 +141,7 @@ void Heap::max_heapify(int i)
     if( largest != i )
     {
         swap(i, largest);
-        cout << "swap: " << i << " -> " << largest << "\n";
+        //cout << "swap: " << i << " -> " << largest << "\n";
 
         max_heapify(largest);
     }
@@ -181,7 +191,7 @@ void Heap::min_heapify(int i)
     if( min != i )
     {
         swap(i, min);
-        cout << "swap: " << i << " -> " << min << "\n";
+        //cout << "swap: " << i << " -> " << min << "\n";
 
         min_heapify(min);
     }
@@ -224,10 +234,54 @@ void Heap::print(void)
 }
 
 
+void Heap::min_heapify_with_new_element(int n)
+{
+    if( a[0] < n ) 
+    {
+        a[0] = n;
+        min_heapify(0);
+    }
+}
+
+
+// 
+// find the top K elements in a[], which size is size_a
+//
+void top_k(const vector<int>& a, int k, vector<int>& b)
+{
+    // get the first k elements
+    for( int i = 0; i < k; i++ )
+        b.push_back(a[i]);
+    
+    Heap min_heap(b, k);
+    
+    //min_heap.print();
+    min_heap.build_min_heap();
+    //min_heap.print();
+
+    for(int i = k; i < a.size(); i++)
+    {
+        min_heap.min_heapify_with_new_element(a[i]);
+    }
+
+    min_heap.getHeap(b);
+}
+
+
+template <class T>
+void print_vector(const vector<T>& a)
+{
+    auto print = [](const T& n) {cout << n << ' ' ;};
+    for_each(a.begin(), a.end(), print);
+
+    cout << "\n";
+}
+
+
 int main(int argc, char* argv[])
 {
-    cout << "hello world!\n";
-    int a[] = {27, 17, 3, 16, 13, 10, 1, 5, 7, 12, 4, 8, 9, 0};
+    // cout << "hello world!\n";
+    vector<int> a = {27, 17, 3, 16, 13, 10, 1, 5, 7, 12, 4, 8, 9, 0};
     
     /*
     Heap heap_b(a, sizeof(a)/sizeof(a[0]));
@@ -239,10 +293,21 @@ int main(int argc, char* argv[])
     heap_b.print();
     */
 
-    Heap heap_a(a, sizeof(a)/sizeof(a[0]));
+    /*
+    Heap heap_a(a, a.size());
     heap_a.print();
     heap_a.heap_sort_reverse();
     heap_a.print();
-    
+    */
+
+    print_vector(a);
+
+    vector<int> b;
+    top_k(a, 6, b);
+ 
+    //auto print = [](const int& n) {cout << n << ' ' ;};
+    //for_each(b.begin(), b.end(), print);
+    print_vector(b);
+
     return 0;
 }
