@@ -198,12 +198,10 @@ if __name__ == "__main__" :
     ]
 
     a = a2
-    
+
     a.reverse()
     sort_beans(a)
 
     # 为了看起来清晰，把矩阵倒过来看
     a.reverse()
     print(np.array(a))
-
-    
