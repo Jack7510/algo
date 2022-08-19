@@ -156,6 +156,6 @@ def test_matrix_invert_distribute():
 
 
 if __name__ == '__main__':
-    test_matrix_invert_algo()
+    #test_matrix_invert_algo()
 
     test_matrix_invert_distribute()
