@@ -120,7 +120,8 @@ class Robot:
                         left_is_gt = True
                 self.move_down()
                 
-        self.move_right()       # back to right
+            self.move_right()       # back to right
+
         return left_is_gt
         
     '''
@@ -144,40 +145,25 @@ class Robot:
                 self.move_down()
 
 
-    '''
-    从右到左，重新排各列
-    '''
-    def sort_beans_from_right_left(self):
-        while True:
-            self.swap_with_left()
-            if self.move_left() is False:   # left boundary
-                return
-            
-            self.move_right()
-            if self.col_left_is_gt() is False:
-                return
-
-
 def sort_beans(a):
     # robot from left_bottom corner
     robot = Robot(a, 0, 0)
 
     # move to the top of column robot_y
     while True:
-        robot.move_right()
-        
-        # 如果整列为空，到了右边界
-        if robot.col_is_null() :
-            return
-
         # 如果比左列的豆子多, right > left, next
         if robot.col_left_is_gt() is False:
-            continue
+            robot.move_right()
+        else:
+            # 左边比右边大，需要调换位置
+            robot.swap_with_left()
+            robot.move_left()
+    
+        # 如果整列为空，到了右边界, stop
+        if robot.col_is_null() :
+            break
 
-        # 左边比右边大，需要调换位置
-        robot.sort_beans_from_right_left()
-
-
+        
 if __name__ == "__main__" :
     a1 = [ \
         [0, 0, 0, 1, 0, 0, 0, 0, 0], \
